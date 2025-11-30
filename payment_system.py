@@ -1,12 +1,15 @@
+# add function which accepts any PaymentGateway object and calls its method (⌛)
+
+
 
 from abc import ABC, abstractmethod
 
 
 
-
 class PaymentGateway(ABC):
-    def __init__(self, amount):
-        self.__amount = amount
+    def __init__(self, number):
+        self.__number = number
+
 
 
     @abstractmethod
@@ -21,9 +24,9 @@ class PaymentGateway(ABC):
 
 class CreditCard(PaymentGateway):
     def __init__(self, number, info):
-        super().__init__(self)
+        super().__init__(number)
         self.__info = info
-        self.__number = number
+
 
     def process_payment(self, amount):
         # Тут має бути логіка перевірки amount
@@ -38,8 +41,8 @@ class CreditCard(PaymentGateway):
 
 
 class PayPal(PaymentGateway):
-    def __init__(self, user_info, balance):
-        super().__init__(self)
+    def __init__(self, number, user_info, balance):
+        super().__init__(number)
         self.__user_info = user_info
         self.__balance = balance
 
@@ -57,7 +60,7 @@ class PayPal(PaymentGateway):
 
 
 value = 100 # Сума транзакції
-my_PayPal = PayPal("Dio23521", 500)
+my_PayPal = PayPal(12345,"Dio23521", 500)
 my_card = CreditCard(12345, "VISA")
 # my_PayPal.get_status()
 result = my_card.process_payment(value)
