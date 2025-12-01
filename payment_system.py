@@ -1,5 +1,6 @@
-# add function which accepts any PaymentGateway object and calls its method (⌛)
-
+# add function which accepts any PaymentGateway object and calls its method (✅)
+# add same function to 'get info' (⌛)
+# customise 'get info' (⌛)
 
 
 from abc import ABC, abstractmethod
@@ -36,7 +37,7 @@ class CreditCard(PaymentGateway):
         return False  # Невдача
 
     def get_status(self):
-        print(f"Інформація про картку: {self.__info}")
+        print(f"Information about card: {self.__info}")
 
 
 
@@ -59,13 +60,68 @@ class PayPal(PaymentGateway):
               f"balance - {self.__balance}$")
 
 
-value = 100 # Сума транзакції
-my_PayPal = PayPal(12345,"Dio23521", 500)
-my_card = CreditCard(12345, "VISA")
 # my_PayPal.get_status()
-result = my_card.process_payment(value)
 
-print(result)
+def make_order_payment(gateway: PaymentGateway, amount: int):   # Polymorphism
 
+    print(f"\n--- Start processing via {gateway.__class__.__name__} ---")
+
+    if gateway.process_payment(amount):
+        print("Payment completed successfully.")
+        return True
+    else:
+        print("The payment failed. Check the status.")
+        gateway.get_status()
+        return False
+
+def payment_interface():
+
+    while True:
+
+        user_choice = input("Pick your payment method 'Credit Card' or 'PayPal' (CC / PP): ")
+
+        if user_choice == "CC":
+            while True:
+                value = None
+                try:
+                    value = int(input("Enter amount to transfer: "))
+                    break
+                except ValueError:
+                    print("Incorrect amount")
+                    continue
+
+            my_card = CreditCard(12345, "VISA")
+            return make_order_payment(my_card, value)
+
+
+        elif user_choice == "PP":
+            while True:
+                value = None
+                try:
+                    value = int(input("Enter amount to transfer: "))
+                    break
+                except ValueError:
+                    print("Incorrect amount")
+                    continue
+
+            my_paypal = PayPal(12345, "Dio23521", 500)
+            return make_order_payment(my_paypal, value)
+
+
+        else:
+            print("Wrong option")
+            continue
+
+
+
+
+def main():
+    payment_interface()
+
+
+
+
+if __name__ == '__main__':
+    main()
 
 
