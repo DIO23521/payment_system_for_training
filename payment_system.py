@@ -34,7 +34,10 @@ class CreditCard(PaymentGateway):
         if amount > 0:
             print(f"CreditCard processed {amount}$ successfully.")
             return True  # Успіх
-        return False  # Невдача
+        else:
+            print(f"Cant processed less than 0$. Your amount is {amount}$")
+            return False  # Невдача
+
 
     def get_status(self):
         print(f"Information about card: {self.__info}")
@@ -42,22 +45,22 @@ class CreditCard(PaymentGateway):
 
 
 class PayPal(PaymentGateway):
-    def __init__(self, number, user_info, balance):
+    def __init__(self, number, user_info):
         super().__init__(number)
         self.__user_info = user_info
-        self.__balance = balance
+
 
     def process_payment(self, amount):
         if amount > 10:
             print(f"PayPal processed {amount}$ successfully.")
             return True
-        print(f"Cant processed less than 10$. Your amount is {amount}$")
-        return False
+        else:
+            print(f"Cant processed less than 10$. Your amount is {amount}$")
+            return False
 
     def get_status(self):
         print(f"User info: \n"
-              f"name - {self.__user_info} \n"
-              f"balance - {self.__balance}$")
+              f"name - {self.__user_info} \n")
 
 
 # my_PayPal.get_status()
@@ -74,7 +77,25 @@ def make_order_payment(gateway: PaymentGateway, amount: int):   # Polymorphism
         gateway.get_status()
         return False
 
-def payment_interface():
+
+
+
+def main():
+
+    while True:
+        number = input("Enter your card number: ")
+
+        if len(number) != 10:
+            print("card contain only 10 digits")
+            continue
+
+        else:
+            if number.isdigit():
+                break
+            else:
+                print("only digits")
+                continue
+
 
     while True:
 
@@ -90,9 +111,8 @@ def payment_interface():
                     print("Incorrect amount")
                     continue
 
-            my_card = CreditCard(12345, "VISA")
+            my_card = CreditCard(number, "VISA")  # tyt pomenyat
             return make_order_payment(my_card, value)
-
 
         elif user_choice == "PP":
             while True:
@@ -104,20 +124,13 @@ def payment_interface():
                     print("Incorrect amount")
                     continue
 
-            my_paypal = PayPal(12345, "Dio23521", 500)
+            my_paypal = PayPal(12345, "Dio23521")
             return make_order_payment(my_paypal, value)
 
 
         else:
             print("Wrong option")
             continue
-
-
-
-
-def main():
-    payment_interface()
-
 
 
 
