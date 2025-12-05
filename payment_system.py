@@ -1,6 +1,7 @@
 # add function which accepts any PaymentGateway object and calls its method (✅)
 # add same function to 'get info' (⌛)
-# customise 'get info' (⌛)
+# customizable 'get info' (⌛)
+# put "-" after every 4 number in card number (⌛)
 
 
 from abc import ABC, abstractmethod
@@ -8,6 +9,7 @@ from abc import ABC, abstractmethod
 
 
 class PaymentGateway(ABC):
+
     def __init__(self, number):
         self.__number = number
 
@@ -27,6 +29,7 @@ class CreditCard(PaymentGateway):
     def __init__(self, number, info):
         super().__init__(number)
         self.__info = info
+        self.__number = number
 
 
     def process_payment(self, amount):
@@ -40,7 +43,7 @@ class CreditCard(PaymentGateway):
 
 
     def get_status(self):
-        print(f"Information about card: {self.__info}")
+        print(f"Information about card: {self.__number} {self.__info}")
 
 
 
@@ -48,6 +51,7 @@ class PayPal(PaymentGateway):
     def __init__(self, number, user_info):
         super().__init__(number)
         self.__user_info = user_info
+        self.__number = number
 
 
     def process_payment(self, amount):
@@ -60,7 +64,8 @@ class PayPal(PaymentGateway):
 
     def get_status(self):
         print(f"User info: \n"
-              f"name - {self.__user_info} \n")
+              f"name - {self.__user_info} \n"
+              f"№ - {self.__number}")
 
 
 # my_PayPal.get_status()
@@ -76,6 +81,52 @@ def make_order_payment(gateway: PaymentGateway, amount: int):   # Polymorphism
         print("The payment failed. Check the status.")
         gateway.get_status()
         return False
+
+
+
+def make_depo_cc():
+    while True:
+        value = None
+        try:
+            value = int(input("Enter amount to transfer: "))
+            break
+        except ValueError:
+            print("Incorrect amount")
+            continue
+
+    my_card = CreditCard(12345, "VISA")
+    payment_successful = make_order_payment(my_card, value)
+    return value if payment_successful else 0
+
+
+def make_depo_pp():
+    while True:
+        value = None
+        try:
+            value = int(input("Enter amount to transfer: "))
+            break
+        except ValueError:
+            print("Incorrect amount")
+            continue
+
+    my_paypal = PayPal(12345, "Dio23521")
+    payment_successful2 = make_order_payment(my_paypal, value)
+    return value if payment_successful2 else 0
+
+def get_information():
+    gate_instance = None
+    while True:
+        info_choice = input("For what system you want information (CC/PP): ").upper()
+        if info_choice == "CC":
+            gate_instance = CreditCard(12345, "VISA")
+            break
+        elif info_choice == "PP":
+            gate_instance = PayPal(12345, "Dio23521")
+            break
+        else:
+            continue
+    print(f"\n--- Start processing via {gate_instance.__class__.__name__} ---")
+    gate_instance.get_status()
 
 
 
@@ -96,41 +147,50 @@ def main():
                 print("only digits")
                 continue
 
+    cc_balance = 0
+    pp_balance = 0
 
     while True:
+        print("\n1. Show balance")
+        print("2. Credit Card deposit")
+        print("3. Pay Pal deposit")
+        print("4. Withdraw")
+        print("5. Exit")
+        print("6. status")
+        answer = input("Select option: ")
 
-        user_choice = input("Pick your payment method 'Credit Card' or 'PayPal' (CC / PP): ")
-
-        if user_choice == "CC":
+        if answer == "1":
             while True:
-                value = None
-                try:
-                    value = int(input("Enter amount to transfer: "))
+                balance_option = input("Pick balance that you want to see 'Credit Card' or 'PayPal' (CC/PP): ").upper()
+                if balance_option == "CC":
+                    print(cc_balance)
                     break
-                except ValueError:
-                    print("Incorrect amount")
+                elif balance_option == "PP":
+                    print(pp_balance)
+                    break
+                else:
+                    print("Wrong option")
                     continue
 
-            my_card = CreditCard(number, "VISA")  # tyt pomenyat
-            return make_order_payment(my_card, value)
-
-        elif user_choice == "PP":
-            while True:
-                value = None
-                try:
-                    value = int(input("Enter amount to transfer: "))
-                    break
-                except ValueError:
-                    print("Incorrect amount")
-                    continue
-
-            my_paypal = PayPal(12345, "Dio23521")
-            return make_order_payment(my_paypal, value)
-
-
+        elif answer == "2":
+            cc_balance += make_depo_cc()
+        elif answer == "3":
+            pp_balance += make_depo_pp()
+        elif answer == "4":
+            pass
+        elif answer == "5":
+            print("Bye")
+            break
+        elif answer == "6":
+            get_information()
         else:
-            print("Wrong option")
-            continue
+            print("---------------------")
+            print("   Invalid choice.   "
+                  "   Select from 1-4   ")
+            print("---------------------")
+
+
+
 
 
 
